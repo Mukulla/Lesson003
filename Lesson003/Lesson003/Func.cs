@@ -12,6 +12,7 @@ namespace Lesson003
     }
     class Func
     {
+
         static public void ShowArray<T>(ref T[,] Arr)
         {
             string Capaciter = "";
