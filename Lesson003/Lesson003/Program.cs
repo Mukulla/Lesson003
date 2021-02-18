@@ -12,18 +12,18 @@ namespace Lesson003
 
         static void Executor()
         {
-            int CountPars = 4;
+            int CountPars = 5;
             string[] Denuntiatio = new string[]
             {
                 "Элементы массива по диагонали",
                 "Телефонный справочник",
-                "Обращение строки", 
+                "Обращение строки",
                 "Морской бой",
                 "Смещение элементов массива"
             };
             //Console.WriteLine(System.Text.Encoding.Default.HeaderName);
             //Цикл-обработчик каждого задания
-            for (int i = 3; i < CountPars; ++i)
+            for (int i = 0; i < CountPars; ++i)
             {
                 //Вывод части и названия задания
                 Console.WriteLine($"Часть {i + 1}: {Denuntiatio[i]}");
@@ -31,10 +31,10 @@ namespace Lesson003
                 switch (i)
                 {
                     case 0:
-                        ShowDiaArray(4,4);
+                        ShowDiaArray();
                         break;
                     case 1:
-                        TellDirectoy(2);
+                        TellDirectoy();
                         break;
                     case 2:
                         Reverser();
@@ -45,7 +45,7 @@ namespace Lesson003
                 }
                 if (i == 4)
                 {
-
+                    ArrayOffSetter();
 
                     Console.WriteLine();
                     Console.WriteLine("Все части пройдены");
@@ -61,9 +61,14 @@ namespace Lesson003
                 Console.Clear();
             }
         }
-
-        static void ShowDiaArray( int i001, int j001 )
+        //Вывод всех элементов двухмерного массива по диагонали
+        static void ShowDiaArray()
         {
+            Console.WriteLine("Введите колчиество строк массива: от 1 до 10");
+            int i001 = Func.GetNumberFromString();
+            Console.WriteLine("Введите колчиество строк массива: от 1 до 10");
+            int j001 = Func.GetNumberFromString();
+
             Func.LeadToBoundaries(ref i001, 1, 10);
             Func.LeadToBoundaries(ref j001, 1, 10);
 
@@ -79,15 +84,19 @@ namespace Lesson003
                 }
             }
         }
+        //Вычисление строки смещения для каждого элемента в соответствии с его номером
         static string OffsetSpacer(int CountSpace)
         {
             string MaSpacer = "";
             string Returnerer = MaSpacer.PadLeft(CountSpace, ' ');
             return Returnerer;
         }
-
-        static void TellDirectoy(int Number)
+        //Список имён и адресов почт
+        static void TellDirectoy()
         {
+            Console.WriteLine("Введите номер строки из справочника: от 1 до 5");
+            int Number = Func.GetNumberFromString();
+            --Number;
             Func.LeadToBoundaries(ref Number, 0, 4);
             string[,] TellDiru =
             {
@@ -99,17 +108,17 @@ namespace Lesson003
             };
             Console.WriteLine("{0:10} {1:10}", TellDiru[Number, 0], TellDiru[Number, 1]);
         }
-
+        //Перевернуть строку
         static void Reverser()
         {
             Console.WriteLine("Введите некое слово");
             string SomeString = Console.ReadLine();
-            for (int i = ( SomeString.Length - 1 ); i >+ 0; --i)
+            for (int i = (SomeString.Length - 1); i > +0; --i)
             {
                 Console.Write(SomeString[i]);
             }
         }
-
+        //Карта с кораблями для морского боя
         static void SeaWarrior()
         {
             char[,] SomeArray = new char[10, 10];
@@ -121,7 +130,7 @@ namespace Lesson003
                 "XXX",
                 "XXXX"
             };
-            
+
             Func.FillArray(ref SomeArray, '.');
 
             var Rnd = new Random();
@@ -129,7 +138,7 @@ namespace Lesson003
             bool Rotater = false;
 
             Str_Indexes Sizes = Func.SetteStr(Shippos.Length, 4);
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < Sizes.i; ++i)
             {
                 for (int j = Sizes.j; j > 0; --j)
                 {
@@ -143,7 +152,7 @@ namespace Lesson003
                     {
                         Rotater = true;
                     }
-                    Koords = CheckShip(ref SomeArray, ref Shippos[i], Rotater);
+                    Koords = CheckShip(ref SomeArray, ref Shippos[i], ref Rotater);
 
                     Func.CopyStringToArray(ref Koords, ref Shippos[i], ref SomeArray, Rotater);
                 }
@@ -152,78 +161,126 @@ namespace Lesson003
             Func.ShowArray(ref SomeArray);
         }
         //Проверка положения корабля для его постановки и выдача координат, которые бы подошли
-        static Str_Indexes CheckShip(ref char[,] Array001, ref string Ship, bool Horu001)
+        static Str_Indexes CheckShip(ref char[,] Array001, ref string Ship, ref bool Horu001)
         {
             var Rnd = new Random();
             Str_Indexes Tempo = Func.SetteStr(0, 0);
-
+            int Iter = 0;
             do
             {
-                Tempo.i = Rnd.Next(0, Array001.GetLength(0));
-                Tempo.j = Rnd.Next(0, Array001.GetLength(0));
+                if ((Iter % 2) == 0)
+                {
+                    Horu001 = !Horu001;
+                }
+                Tempo.i = Rnd.Next(0, Array001.GetLength(0) - Ship.Length);
+                Tempo.j = Rnd.Next(0, Array001.GetLength(1) - Ship.Length);
+                //Console.WriteLine($"{Tempo.i} {Tempo.j}");
+                ++Iter;
             }
-            while (!CheckDirection(ref Tempo, ref Array001, ref Ship, Horu001) && !CheckForwardSpace(ref Tempo, ref Array001, ref Ship, Horu001));
-
+            while (!CheckDirection(ref Tempo, ref Array001, ref Ship, ref Horu001));
+            //Посмотреть итоговые координаты размещения текущего корабля и его направление
+            //Console.WriteLine($"{Tempo.i} {Tempo.j} {Horu001}");
+            //Количество попыток
+            //Console.WriteLine(Iter);
             return Tempo;
         }
         //Проверка возможности помещения корабля в массив с указанным направлением
-        static bool CheckDirection(ref Str_Indexes Koords001, ref char[,] Array002, ref string Ship, bool Horu002)
+        static bool CheckDirection(ref Str_Indexes Koords001, ref char[,] Array002, ref string Ship, ref bool Horu002)
         {
+            char Elem;
+            int Iterator;
             for (int i = 0; i < Ship.Length; ++i)
             {
-                if(Horu002)
+                Elem = Ship[i];
+                if (Horu002)
                 {
-                    if(Koords001.j < Array002.GetLength(1))
+                    /*
+                    if(Koords001.j > Array002.GetLength(1))
+                    {
+                        return false;
+                    }*/
+                    Iterator = Koords001.j;
+                    if (Array002[Koords001.i, Koords001.j] == Elem)
                     {
                         return false;
                     }
-                    if(Array002[Koords001.i, Koords001.j] == Ship[i] )
-                    {
-                        return false;
-                    }
-                    ++Koords001.j;
+                    ++Iterator;
                 }
                 else
-                {
-                    if (Koords001.i < Array002.GetLength(0))
+                {/*
+                    if (Koords001.i > Array002.GetLength(0))
+                    {
+                        return false;
+                    }*/
+                    Iterator = Koords001.i;
+                    if (Array002[Iterator, Koords001.j] == Elem)
                     {
                         return false;
                     }
-                    if (Array002[Koords001.i, Koords001.j] == Ship[i])
-                    {
-                        return false;
-                    }
-                    ++Koords001.i;
-                }
-            }
-            return true;
-        }
-        //Проверка выхода корабля за пределы поля
-        static bool CheckForwardSpace(ref Str_Indexes Koords001, ref char[,] Array002, ref string Ship, bool Horu002)
-        {
-            int TotalValue = 0;
-            if (Horu002)
-            {
-                TotalValue = Koords001.j + Ship.Length;
-                if (TotalValue > Array002.GetLength(1))
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                TotalValue = Koords001.i + Ship.Length;
-                if (TotalValue > Array002.GetLength(0))
-                {
-                    return false;
+                    ++Iterator;
                 }
             }
             return true;
         }
 
-        static void OffSetValuesInArray<T>( ref T[] Array, int OffSet001)
+        static void ArrayOffSetter()
         {
+            Console.WriteLine("Введите размер массива");
+            int Sizer = Func.GetNumberFromString();
+            if (Sizer < 1)
+            {
+                Sizer = 1;
+            }
+            int[] SomeArray = new int[10];
+            Func.SetRandomValues(ref SomeArray, -12, 12);
+            Func.ShowArray(ref SomeArray);
 
+            Console.WriteLine("Введите величину смещения элементов в одномерном массиве");
+
+            OffSetValuesInArray(ref SomeArray, Func.GetNumberFromString());
+            Func.ShowArray(ref SomeArray);
+        }
+
+        static void OffSetValuesInArray<T>(ref T[] Array, int OffSet001)
+        {
+            int Min = OffSet001, Max = Min + Array.Length;
+            Func.LeadToBoundaries(ref Min, 0, Array.Length);
+            Func.LeadToBoundaries(ref Max, 0, Array.Length);
+
+            int StartOffSet = 0;
+            T T1;
+
+            if (OffSet001 < 0)
+            {
+                T1 = Array[(Array.Length - 1)];
+                StartOffSet -= OffSet001;
+                for (int i = 0; i < Max; ++i)
+                {
+                    Array[i] = Array[StartOffSet];
+                    ++StartOffSet;
+                }
+
+                for (int i = (Array.Length - 1); i >= Max; --i)
+                {
+                    Array[i] = T1;
+                }
+                return;
+            }
+            if (OffSet001 > 0)
+            {
+                T1 = Array[0];
+                StartOffSet = (Max - 1) - Min;
+                for (int i = (Max - 1); i >= Min; --i)
+                {
+                    Array[i] = Array[StartOffSet];
+                    --StartOffSet;
+                }
+
+                for (int i = 0; i < Min; ++i)
+                {
+                    Array[i] = T1;
+                }
+            }
         }
     }
 }
