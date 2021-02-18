@@ -194,11 +194,6 @@ namespace Lesson003
                 Elem = Ship[i];
                 if (Horu002)
                 {
-                    /*
-                    if(Koords001.j > Array002.GetLength(1))
-                    {
-                        return false;
-                    }*/
                     Iterator = Koords001.j;
                     if (Array002[Koords001.i, Koords001.j] == Elem)
                     {
@@ -207,11 +202,7 @@ namespace Lesson003
                     ++Iterator;
                 }
                 else
-                {/*
-                    if (Koords001.i > Array002.GetLength(0))
-                    {
-                        return false;
-                    }*/
+                {
                     Iterator = Koords001.i;
                     if (Array002[Iterator, Koords001.j] == Elem)
                     {
@@ -231,8 +222,8 @@ namespace Lesson003
             {
                 Sizer = 1;
             }
-            int[] SomeArray = new int[10];
-            Func.SetRandomValues(ref SomeArray, -12, 12);
+            int[] SomeArray = new int[Sizer];
+            Func.SetRandomValues(ref SomeArray, -99, 99);
             Func.ShowArray(ref SomeArray);
 
             Console.WriteLine("Введите величину смещения элементов в одномерном массиве");
